@@ -114,37 +114,6 @@ Important operation notes:
 - Browser Lab dialogs default to in-page dialogs so record and replay can capture them consistently. Add `&nativeDialogs=1` to T11/T12 URLs only for a separate native `alert`/`confirm` compatibility test.
 - Content publishing creates a mock published page and provides a delete button; deletion is optional for T09 pass/fail unless specifically testing cleanup.
 
-## Public Exposure
-
-The demo site is exposed through frp at:
-
-```text
-http://<frp-host>:9876/
-```
-
-Two launchd agents keep it running:
-
-- `com.fairme.record-replay-demo-web` serves the production build on `127.0.0.1:5173`
-- `com.fairme.record-replay-demo-frpc` maps public `<frp-host>:9876` to local `127.0.0.1:5173`
-
-Agent plists live in `ops/`, and startup scripts live in `scripts/`.
-
-Status checks:
-
-```bash
-launchctl print gui/$(id -u)/com.fairme.record-replay-demo-web
-launchctl print gui/$(id -u)/com.fairme.record-replay-demo-frpc
-curl -I http://127.0.0.1:5173/
-curl -I http://<frp-host>:9876/
-```
-
-Logs:
-
-```bash
-tail -f /private/tmp/record-replay-demo-web.log
-tail -f /private/tmp/record-replay-demo-frpc.log
-```
-
 ## Setup
 
 ```bash
