@@ -663,10 +663,6 @@ function App() {
                   <Users size={17} />
                   {text.cumulativeVisits} {visitCount}
                 </span>
-                <span>
-                  <CloudSun size={17} />
-                  {text.weatherRunning}
-                </span>
               </div>
             </section>
 
