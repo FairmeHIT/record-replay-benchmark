@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">调度大屏</title>
+  <desc id="desc">带有地图、指标卡和趋势图的运营调度界面</desc>
+  <rect width="640" height="420" rx="28" fill="#e8f3f1"/>
+  <rect x="38" y="40" width="564" height="340" rx="18" fill="#ffffff"/>
+  <rect x="68" y="72" width="224" height="212" rx="14" fill="#d9ebe7"/>
+  <path d="M92 218 C132 164 154 190 178 138 C200 88 234 108 268 88" fill="none" stroke="#0d6f69" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="128" cy="170" r="16" fill="#ef6f4d"/>
+  <circle cx="225" cy="116" r="16" fill="#2266d2"/>
+  <rect x="322" y="72" width="110" height="82" rx="14" fill="#f5f7fb"/>
+  <rect x="456" y="72" width="110" height="82" rx="14" fill="#f5f7fb"/>
+  <rect x="322" y="190" width="244" height="94" rx="14" fill="#f5f7fb"/>
+  <path d="M344 248 L382 226 L420 242 L458 210 L510 224 L546 198" fill="none" stroke="#0d6f69" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="68" y="314" width="498" height="22" rx="11" fill="#dde7ee"/>
+  <rect x="68" y="314" width="316" height="22" rx="11" fill="#0d6f69"/>
+</svg>

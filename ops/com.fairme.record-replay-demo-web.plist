@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.fairme.record-replay-demo-web</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/fairme/Codes/record-and-replay</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/Users/fairme/Codes/record-and-replay/scripts/start-public-web.sh</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/private/tmp/record-replay-demo-web.log</string>
+    <key>StandardErrorPath</key>
+    <string>/private/tmp/record-replay-demo-web.log</string>
+  </dict>
+</plist>

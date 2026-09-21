@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">商品货架</title>
+  <desc id="desc">电商货架上摆放背包、台灯和杯子</desc>
+  <rect width="640" height="420" rx="28" fill="#f1efe9"/>
+  <rect x="52" y="54" width="536" height="292" rx="18" fill="#ffffff"/>
+  <rect x="84" y="112" width="472" height="16" rx="8" fill="#cfc8bd"/>
+  <rect x="84" y="236" width="472" height="16" rx="8" fill="#cfc8bd"/>
+  <path d="M132 190 h78 l16 92 h-110 z" fill="#0d6f69"/>
+  <path d="M140 190 c8-36 58-36 66 0" fill="none" stroke="#0d6f69" stroke-width="12"/>
+  <rect x="302" y="148" width="70" height="122" rx="20" fill="#ef6f4d"/>
+  <rect x="286" y="270" width="102" height="18" rx="9" fill="#363f4a"/>
+  <path d="M337 148 v-44" stroke="#363f4a" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="337" cy="92" r="30" fill="#ffd36d"/>
+  <path d="M464 190 h78 v82 c0 22-18 40-40 40s-38-18-38-40z" fill="#2266d2"/>
+  <path d="M542 216 c28 0 28 54 0 54" fill="none" stroke="#2266d2" stroke-width="16"/>
+  <rect x="92" y="360" width="456" height="18" rx="9" fill="#cfc8bd"/>
+</svg>

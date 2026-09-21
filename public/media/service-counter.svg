@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">服务柜台</title>
+  <desc id="desc">客户服务柜台前有工单、头像和服务状态</desc>
+  <rect width="640" height="420" rx="28" fill="#edf2f8"/>
+  <rect x="60" y="58" width="520" height="284" rx="22" fill="#ffffff"/>
+  <circle cx="172" cy="142" r="44" fill="#0d6f69"/>
+  <rect x="118" y="204" width="108" height="70" rx="26" fill="#0d6f69"/>
+  <rect x="286" y="96" width="226" height="28" rx="14" fill="#d7e1ea"/>
+  <rect x="286" y="152" width="164" height="24" rx="12" fill="#d7e1ea"/>
+  <rect x="286" y="204" width="206" height="24" rx="12" fill="#d7e1ea"/>
+  <rect x="286" y="256" width="126" height="24" rx="12" fill="#d7e1ea"/>
+  <circle cx="508" cy="254" r="34" fill="#ef6f4d"/>
+  <path d="M493 254 l11 12 l22-28" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="94" y="344" width="452" height="18" rx="9" fill="#bfccd8"/>
+</svg>
