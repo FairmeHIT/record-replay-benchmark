@@ -1,4 +1,8 @@
-# Record & Replay Demo Benchmark
+# Record & Replay Benchmark
+
+A browser-automation record & replay proving ground. 12 deterministic tasks cover forms, tables, search, checkout, files, dialogs, drag-and-drop, images, and hyperlinks on a realistic local site, with seeded replay, event streams, and final-state scoring.
+
+![Homepage](screenshot/fig.png)
 
 This workspace contains a local demo benchmark site plus a small MiniWoB++ setup for evaluating browser UI automation workflows.
 
@@ -167,6 +171,38 @@ Show the browser window:
 ```
 
 The smoke test opens `miniwob/click-test-2-v1`, reads the instruction, clicks the target button, and prints the reward and success flag.
+
+## Regression Tests
+
+Two complementary checks verify that every task can be completed through the real UI:
+
+### Preflight (logic-only, no browser)
+
+Builds the task bundle, constructs the "fully completed" state for each task across 30 seeds, and asserts the final-state evaluator returns 100% for every combination.
+
+```bash
+npm run preflight
+```
+
+### E2E smoke (real browser, full UI flow)
+
+Drives Chrome via Selenium to click, type, select, drag, and submit each of the 12 tasks on the README's recommended seeds, then asserts each one reaches a 100% final-state score. Requires Chrome and the `.venv` setup from the Setup section.
+
+```bash
+# 1. Start the preview server in one terminal
+npm run preview
+
+# 2. Run the smoke test in another terminal
+npm run e2e:smoke
+```
+
+Expected output ends with:
+
+```text
+T01: 1  T02: 1  T03: 1  T04: 1  T05: 1  T06: 1
+T07: 1  T08: 1  T09: 1  T10: 1  T11: 1  T12: 1
+ALL PASS
+```
 
 ## Evaluation Notes
 
