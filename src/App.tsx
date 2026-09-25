@@ -356,7 +356,7 @@ function App() {
       case "media-review":
         return <ContentReviewView locale={locale} state={taskState} onChange={updateTaskState} />;
       case "control-benchmark":
-        return <ControlBenchmarkView locale={locale} state={taskState} onChange={updateTaskState} />;
+        return <ControlBenchmarkView taskId={taskId} locale={locale} state={taskState} onChange={updateTaskState} />;
       default:
         return null;
     }

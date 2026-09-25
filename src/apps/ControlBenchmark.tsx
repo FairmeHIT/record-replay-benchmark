@@ -4,6 +4,7 @@ import type { Locale } from "../lib/localization";
 import type { ControlBenchmarkState, EventRecord } from "../lib/types";
 
 interface ViewProps {
+  taskId: string;
   locale: Locale;
   state: ControlBenchmarkState;
   onChange: (next: ControlBenchmarkState, label: string, type?: EventRecord["type"]) => void;
@@ -282,8 +283,12 @@ function ShadowHost({ value, onChange, locale }: { value: string; onChange: (v: 
   return <div ref={hostRef} data-testid="shadow-host" />;
 }
 
-export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
+export function ControlBenchmarkView({ taskId, locale, state, onChange }: ViewProps) {
   const text = cbText[locale];
+  const showBasic = taskId === "control-benchmark.atomic-basic";
+  const showAdvanced = taskId === "control-benchmark.atomic-advanced";
+  const showComposite = taskId === "control-benchmark.composite-scenarios";
+  const showAtomic = showBasic || showAdvanced || showComposite;
   const f = state.form;
   const t = state.target;
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -300,7 +305,7 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
     ctx.fillStyle = "#111827";
     ctx.font = "14px sans-serif";
     ctx.fillText(text.canvasHint, 180, 86);
-  }, [text.canvasHint]);
+  }, [taskId, text.canvasHint]);
 
   const patch = (p: Partial<ControlBenchmarkState["form"]>, label: string, type: EventRecord["type"] = "input") => {
     onChange({ ...state, form: { ...f, ...p } }, label, type);
@@ -330,6 +335,7 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
 
   return (
     <div className="workspace-grid">
+      {showAtomic ? (
       <section className="panel">
         <div className="panel-heading">
           <div>
@@ -341,7 +347,9 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
         <p className="safe-note">{text.atomicDesc}</p>
 
         <div className="cb-grid">
-          {/* 1. Button */}
+          {showBasic ? (
+            <>
+{/* 1. Button */}
           <div className="cb-card">
             <h3>{text.button}</h3>
             <div className="cb-row">
@@ -377,7 +385,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 2. Text */}
+                      </>
+          ) : null}
+          {showBasic ? (
+            <>
+{/* 2. Text */}
           <div className="cb-card">
             <h3>{text.text}</h3>
             <div className="cb-col">
@@ -406,7 +418,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 3. Radio / Checkbox / Switch */}
+                      </>
+          ) : null}
+          {showBasic ? (
+            <>
+{/* 3. Radio / Checkbox / Switch */}
           <div className="cb-card">
             <h3>{text.choice}</h3>
             <div className="cb-row">
@@ -454,44 +470,56 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 4. Select */}
+                      </>
+          ) : null}
+          {showBasic || showAdvanced ? (
+            <>
+{/* 4. Select */}
           <div className="cb-card">
             <h3>{text.select}</h3>
             <div className="cb-col">
-              <select
-                value={f.selectValue}
-                data-testid="select-native"
-                onChange={(e) => patch({ selectValue: e.target.value }, text.eventSelect, "selection")}
-              >
-                <option value="">{text.selectPlaceholder}</option>
-                {allCities.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-              <div className="autocomplete">
-                <input
-                  value={f.autocompleteValue}
-                  data-testid="autocomplete-input"
-                  placeholder={text.autoPlaceholder}
-                  onChange={(e) => patch({ autocompleteValue: e.target.value }, text.eventAuto)}
-                />
-                <div className="suggestions show" data-testid="autocomplete-panel">
-                  {autocompleteSuggestions.map((c) => (
-                    <div
-                      key={c}
-                      data-value={c}
-                      onClick={() => patch({ autocompleteValue: c, autocompleteDone: true }, text.eventAuto, "selection")}
-                    >
-                      {c}
-                    </div>
+              {showBasic ? (
+                <select
+                  value={f.selectValue}
+                  data-testid="select-native"
+                  onChange={(e) => patch({ selectValue: e.target.value }, text.eventSelect, "selection")}
+                >
+                  <option value="">{text.selectPlaceholder}</option>
+                  {allCities.map((c) => (
+                    <option key={c} value={c}>{c}</option>
                   ))}
+                </select>
+              ) : null}
+              {showAdvanced ? (
+                <div className="autocomplete">
+                  <input
+                    value={f.autocompleteValue}
+                    data-testid="autocomplete-input"
+                    placeholder={text.autoPlaceholder}
+                    onChange={(e) => patch({ autocompleteValue: e.target.value }, text.eventAuto)}
+                  />
+                  <div className="suggestions show" data-testid="autocomplete-panel">
+                    {autocompleteSuggestions.map((c) => (
+                      <div
+                        key={c}
+                        data-value={c}
+                        onClick={() => patch({ autocompleteValue: c, autocompleteDone: true }, text.eventAuto, "selection")}
+                      >
+                        {c}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </div>
-            <div className="safe-note">{text.autoHint}</div>
+            {showAdvanced ? <div className="safe-note">{text.autoHint}</div> : null}
           </div>
 
-          {/* 5. Date / Time */}
+                      </>
+          ) : null}
+          {showAdvanced ? (
+            <>
+{/* 5. Date / Time */}
           <div className="cb-card">
             <h3>{text.date}</h3>
             <div className="cb-row">
@@ -513,36 +541,52 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 6. Tabs / Accordion */}
+                      </>
+          ) : null}
+          {showBasic || showAdvanced ? (
+            <>
+{/* 6. Tabs / Accordion */}
           <div className="cb-card">
             <h3>{text.tabs}</h3>
-            <div className="cb-tabs">
-              {["tab1", "tab2", "tab3"].map((tab) => (
+            {showBasic ? (
+              <>
+                <div className="cb-tabs">
+                  {["tab1", "tab2", "tab3"].map((tab) => (
+                    <button
+                      key={tab}
+                      className={f.tabActive === tab ? "cb-tab active" : "cb-tab"}
+                      data-testid={`tab-${tab.slice(-1)}`}
+                      onClick={() => patch({ tabActive: tab }, text.eventTab, "selection")}
+                    >
+                      {tab === "tab1" ? (locale === "zh" ? "概览" : "Overview") : tab === "tab2" ? (locale === "zh" ? "详情" : "Details") : (locale === "zh" ? "设置" : "Settings")}
+                    </button>
+                  ))}
+                </div>
+                <div className="cb-tab-panel">
+                  {f.tabActive === "tab1" ? "A-001" : f.tabActive === "tab2" ? "B-002" : "C-003"}
+                </div>
+              </>
+            ) : null}
+            {showAdvanced ? (
+              <>
                 <button
-                  key={tab}
-                  className={f.tabActive === tab ? "cb-tab active" : "cb-tab"}
-                  data-testid={`tab-${tab.slice(-1)}`}
-                  onClick={() => patch({ tabActive: tab }, text.eventTab, "selection")}
+                  className="text-button"
+                  data-testid="accordion-toggle"
+                  onClick={() => patch({ accordionOpen: !f.accordionOpen }, text.eventAccordion)}
                 >
-                  {tab === "tab1" ? (locale === "zh" ? "概览" : "Overview") : tab === "tab2" ? (locale === "zh" ? "详情" : "Details") : (locale === "zh" ? "设置" : "Settings")}
+                  <ChevronDown size={15} className={f.accordionOpen ? "rotated" : ""} />
+                  {text.accordionToggle}
                 </button>
-              ))}
-            </div>
-            <div className="cb-tab-panel">
-              {f.tabActive === "tab1" ? "A-001" : f.tabActive === "tab2" ? "B-002" : "C-003"}
-            </div>
-            <button
-              className="text-button"
-              data-testid="accordion-toggle"
-              onClick={() => patch({ accordionOpen: !f.accordionOpen }, text.eventAccordion)}
-            >
-              <ChevronDown size={15} className={f.accordionOpen ? "rotated" : ""} />
-              {text.accordionToggle}
-            </button>
-            {f.accordionOpen ? <div className="safe-note">ACC-OK</div> : null}
+                {f.accordionOpen ? <div className="safe-note">ACC-OK</div> : null}
+              </>
+            ) : null}
           </div>
 
-          {/* 7. Modal / Toast */}
+                      </>
+          ) : null}
+          {showBasic ? (
+            <>
+{/* 7. Modal / Toast */}
           <div className="cb-card">
             <h3>{text.modal}</h3>
             <div className="cb-row">
@@ -588,7 +632,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 8. Tree / Slider */}
+                      </>
+          ) : null}
+          {showBasic ? (
+            <>
+{/* 8. Tree / Slider */}
           <div className="cb-card">
             <h3>{text.tree}</h3>
             <div className="cb-tree">
@@ -619,7 +667,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 9. Drag & Drop */}
+                      </>
+          ) : null}
+          {showAdvanced ? (
+            <>
+{/* 9. Drag & Drop */}
           <div className="cb-card">
             <h3>{text.drag}</h3>
             <div className="cb-row">
@@ -646,7 +698,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 10. Canvas */}
+                      </>
+          ) : null}
+          {showAdvanced || showComposite ? (
+            <>
+{/* 10. Canvas */}
           <div className="cb-card">
             <h3>{text.canvas}</h3>
             <canvas
@@ -668,7 +724,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 11. SVG */}
+                      </>
+          ) : null}
+          {showAdvanced || showComposite ? (
+            <>
+{/* 11. SVG */}
           <div className="cb-card">
             <h3>{text.svg}</h3>
             <svg className="cb-svg" viewBox="0 0 500 190" data-testid="svg-root">
@@ -690,7 +750,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 12. Shadow DOM */}
+                      </>
+          ) : null}
+          {showAdvanced || showComposite ? (
+            <>
+{/* 12. Shadow DOM */}
           <div className="cb-card">
             <h3>{text.shadow}</h3>
             <ShadowHost
@@ -703,7 +767,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 13. Infinite Scroll */}
+                      </>
+          ) : null}
+          {showAdvanced ? (
+            <>
+{/* 13. Infinite Scroll */}
           <div className="cb-card">
             <h3>{text.scroll}</h3>
             <div className="cb-scrollbox" data-testid="infinite-scroll">
@@ -727,7 +795,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 14. Table / Sort */}
+                      </>
+          ) : null}
+          {showAdvanced ? (
+            <>
+{/* 14. Table / Sort */}
           <div className="cb-card">
             <h3>{text.table}</h3>
             <button
@@ -753,7 +825,11 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             </div>
           </div>
 
-          {/* 15. Pagination */}
+                      </>
+          ) : null}
+          {showAdvanced ? (
+            <>
+{/* 15. Pagination */}
           <div className="cb-card">
             <h3>{text.pagination}</h3>
             <div className="data-table">
@@ -787,10 +863,15 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
             <div className={`status-text ${f.paginationTargetFound ? "approved" : "pending"}`}>
               {text.pageHint}: {t.paginationTarget}
             </div>
-          </div>
+          </div>            </>
+          ) : null}
+
         </div>
       </section>
+      ) : null}
 
+      {showComposite ? (
+      <>
       {/* Scenarios */}
       <section className="panel">
         <div className="panel-heading">
@@ -1018,6 +1099,8 @@ export function ControlBenchmarkView({ locale, state, onChange }: ViewProps) {
           </div>
         </div>
       </section>
+      </>
+      ) : null}
     </div>
   );
 }
