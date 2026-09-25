@@ -21,8 +21,12 @@ const cbText = {
     text: "文本 / 密码 / Textarea",
     choice: "Radio / Checkbox / Switch",
     select: "Select / Autocomplete",
+    selectNative: "Native Select",
+    autocomplete: "Autocomplete",
     date: "Date / Time",
     tabs: "Tabs / Accordion",
+    tabsOnly: "Tabs",
+    accordionOnly: "Accordion",
     modal: "Modal / Toast",
     tree: "Tree / Slider",
     drag: "Drag & Drop",
@@ -125,8 +129,12 @@ const cbText = {
     text: "Text / Password / Textarea",
     choice: "Radio / Checkbox / Switch",
     select: "Select / Autocomplete",
+    selectNative: "Native Select",
+    autocomplete: "Autocomplete",
     date: "Date / Time",
     tabs: "Tabs / Accordion",
+    tabsOnly: "Tabs",
+    accordionOnly: "Accordion",
     modal: "Modal / Toast",
     tree: "Tree / Slider",
     drag: "Drag & Drop",
@@ -476,7 +484,7 @@ export function ControlBenchmarkView({ taskId, locale, state, onChange }: ViewPr
             <>
 {/* 4. Select */}
           <div className="cb-card">
-            <h3>{text.select}</h3>
+            <h3>{showBasic ? text.selectNative : text.autocomplete}</h3>
             <div className="cb-col">
               {showBasic ? (
                 <select
@@ -547,7 +555,7 @@ export function ControlBenchmarkView({ taskId, locale, state, onChange }: ViewPr
             <>
 {/* 6. Tabs / Accordion */}
           <div className="cb-card">
-            <h3>{text.tabs}</h3>
+            <h3>{showBasic ? text.tabsOnly : text.accordionOnly}</h3>
             {showBasic ? (
               <>
                 <div className="cb-tabs">
