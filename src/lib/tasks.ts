@@ -5,9 +5,16 @@ import {
   evaluateBrowserFullStress,
   evaluateBrowserUploadDownload,
 } from "./browserLab";
+import {
+  createControlBenchmarkState,
+  evaluateAtomicAdvanced,
+  evaluateAtomicBasic,
+  evaluateCompositeScenarios,
+} from "./controlBenchmark";
 import type {
   BrowserLabState,
   CodeHostingState,
+  ControlBenchmarkState,
   EvaluationCheck,
   EvaluationResult,
   MediaReviewState,
@@ -740,6 +747,51 @@ export const tasks: TaskDefinition[] = [
       return `关闭所有干扰层。上传任意文件，资料类型选择「${lab.target.uploadType}」并解析。完成提示弹窗、审批码 ${lab.target.approvalCode} 和确认归档。选择资料 ${lab.target.documentId}，将业务处理队列拖拽为 ${lab.target.dragOrder.join(" > ")}，把报表格式设为 ${lab.target.reportFormat} 并下载报表。备注中写入「${lab.target.memoKeyword}」，最后提交任务。`;
     },
     evaluate: (state) => evaluateBrowserFullStress(state as BrowserLabState),
+  },
+  {
+    id: "control-benchmark.atomic-basic",
+    appId: "control-benchmark",
+    appName: "控件验证场",
+    title: "原子控件基础验证",
+    difficulty: "easy",
+    tags: ["按钮", "文本", "选择", "滑块", "弹窗"],
+    summary: "完成按钮、文本、Radio/Checkbox/Switch、下拉、滑块、弹窗和 Tab 等基础控件交互。",
+    createState: (seed) => createControlBenchmarkState(seed + 1001),
+    instruction: (state) => {
+      const cb = state as ControlBenchmarkState;
+      return `依次完成基础控件验证：点击普通按钮、延迟按钮（等待响应）和双击按钮；在文本框输入「${cb.target.textValue}」，密码框输入 ${cb.target.passwordValue}；选择 Radio ${cb.target.radioValue}，勾选 Checkbox，将 Switch 设为${cb.target.switchOn ? "开启" : "关闭"}；下拉选择「${cb.target.selectValue}」；将滑块调整到 ${cb.target.sliderValue}；打开弹窗并确认；切换到「详情」Tab。`;
+    },
+    evaluate: (state) => evaluateAtomicBasic(state as ControlBenchmarkState),
+  },
+  {
+    id: "control-benchmark.atomic-advanced",
+    appId: "control-benchmark",
+    appName: "控件验证场",
+    title: "原子控件高级验证",
+    difficulty: "medium",
+    tags: ["自动补全", "拖拽", "Canvas", "SVG", "Shadow DOM"],
+    summary: "完成自动补全消歧、日期、拖拽、Canvas/SVG/Shadow DOM、无限滚动、表格排序和分页等高级控件。",
+    createState: (seed) => createControlBenchmarkState(seed + 2002),
+    instruction: (state) => {
+      const cb = state as ControlBenchmarkState;
+      return `完成高级控件验证：在自动补全中精确选择「${cb.target.autocompleteValue}」（候选包含相似项，不要误选）；设置日期为 ${cb.target.dateValue}；将拖拽卡片拖到目标区域；点击 Canvas 蓝色圆形区域；点击 SVG 圆形；在 Shadow DOM 中输入 ${cb.target.shadowValue} 并提交；在无限滚动中找到 ${cb.target.scrollTarget} 并点击；点击表格按分数排序；翻页找到 ${cb.target.paginationTarget}；展开手风琴。`;
+    },
+    evaluate: (state) => evaluateAtomicAdvanced(state as ControlBenchmarkState),
+  },
+  {
+    id: "control-benchmark.composite-scenarios",
+    appId: "control-benchmark",
+    appName: "控件验证场",
+    title: "复合场景验证",
+    difficulty: "hard",
+    tags: ["复合表单", "异步列表", "分页查找", "防重提交", "混合 UI"],
+    summary: "完成复合表单查询、异步列表筛选、分页查找、高风险防重提交和混合 UI 场景。",
+    createState: (seed) => createControlBenchmarkState(seed + 3003),
+    instruction: (state) => {
+      const cb = state as ControlBenchmarkState;
+      return `完成复合场景：S01 输入客户「${cb.target.scenarioName}」、类型「${cb.target.scenarioType}」、日期 ${cb.target.scenarioDate} 后查询；S03 筛选区域「${cb.target.scenarioRegion}」后加载数据；S04 翻页找到 ORDER-X-042 后停止；S11 模拟付款一次（金额 ${cb.target.scenarioAmount}）并确保重复提交被拦截；S12 勾选 Shadow DOM、Canvas、SVG 全部完成后检查。`;
+    },
+    evaluate: (state) => evaluateCompositeScenarios(state as ControlBenchmarkState),
   },
 ];
 

@@ -180,6 +180,64 @@ try {
           memo: `资料${state.target.memoKeyword}`,
           submitted: true,
         };
+      case "control-benchmark":
+        return {
+          ...state,
+          form: {
+            ...state.form,
+            buttonNormalOk: true,
+            buttonDelayedOk: true,
+            buttonDoubleOk: true,
+            textValue: state.target.textValue,
+            passwordValue: state.target.passwordValue,
+            textareaValue: "回放验证",
+            textChanged: true,
+            radioValue: state.target.radioValue,
+            checkboxChecked: true,
+            switchOn: state.target.switchOn,
+            choiceDone: true,
+            selectValue: state.target.selectValue,
+            autocompleteValue: state.target.autocompleteValue,
+            autocompleteDone: true,
+            dateValue: state.target.dateValue,
+            timeValue: "09:30",
+            dateDone: true,
+            tabActive: "tab2",
+            accordionOpen: true,
+            modalConfirmed: true,
+            toastShown: true,
+            treeOpen: true,
+            sliderValue: state.target.sliderValue,
+            sliderDone: true,
+            dragCompleted: true,
+            canvasClicked: true,
+            svgClicked: true,
+            shadowValue: state.target.shadowValue,
+            shadowResult: "SHADOW_OK",
+            scrollTargetFound: true,
+            tableSorted: true,
+            paginationPage: 4,
+            paginationTargetFound: true,
+            s1Name: state.target.scenarioName,
+            s1Type: state.target.scenarioType,
+            s1Date: state.target.scenarioDate,
+            s1Result: "FORM_SCENE_OK",
+            s3Region: state.target.scenarioRegion,
+            s3Loaded: true,
+            s3Result: "ASYNC_TABLE_OK",
+            s4Page: 5,
+            s4Result: "FOUND ORDER-X-042",
+            s11Amount: state.target.scenarioAmount,
+            s11Paid: true,
+            s11DuplicateBlocked: true,
+            s11TransactionId: `PAY-${seed}`,
+            s11Result: `PAYMENT_MOCK_OK PAY-${seed}`,
+            s12Shadow: true,
+            s12Canvas: true,
+            s12Svg: true,
+            s12Result: "MIXED_UI_OK",
+          },
+        };
       default:
         return state;
     }
@@ -192,13 +250,14 @@ try {
     ]),
   );
 
-  if (tasks.length !== 12) failures.push(`expected 12 tasks, found ${tasks.length}`);
+  if (tasks.length !== 15) failures.push(`expected 15 tasks, found ${tasks.length}`);
   if (new Set(tasks.map((task) => task.id)).size !== tasks.length) {
     failures.push("task IDs are not unique");
   }
+  const expectedCounts = { easy: 5, medium: 5, hard: 5 };
   for (const difficulty of ["easy", "medium", "hard"]) {
-    if (difficultyCounts[difficulty] !== 4) {
-      failures.push(`${difficulty} task count is ${difficultyCounts[difficulty]}, expected 4`);
+    if (difficultyCounts[difficulty] !== expectedCounts[difficulty]) {
+      failures.push(`${difficulty} task count is ${difficultyCounts[difficulty]}, expected ${expectedCounts[difficulty]}`);
     }
   }
 

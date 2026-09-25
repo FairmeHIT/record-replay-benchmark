@@ -1,6 +1,6 @@
 # Record & Replay Benchmark
 
-A browser-automation record & replay proving ground. 12 deterministic tasks cover forms, tables, search, checkout, files, dialogs, drag-and-drop, images, and hyperlinks on a realistic local site, with seeded replay, event streams, and final-state scoring.
+A browser-automation record & replay proving ground. 15 deterministic tasks cover forms, tables, search, checkout, files, dialogs, drag-and-drop, images, hyperlinks, and atomic UI controls (Button, Canvas, SVG, Shadow DOM, Autocomplete, Infinite Scroll, Pagination, etc.) on a realistic local site, with seeded replay, event streams, and final-state scoring.
 
 ![Homepage](screenshot/fig.png)
 
@@ -40,6 +40,9 @@ Current demo tasks:
 - T10 Easy: Browser Lab upload/download verification
 - T11 Medium: Browser Lab dialogs and interference handling
 - T12 Hard: Browser Lab full browser stress flow
+- T13 Easy: Control Benchmark atomic control basics (Button, Text, Radio/Checkbox/Switch, Select, Slider, Modal, Tabs)
+- T14 Medium: Control Benchmark atomic control advanced (Autocomplete disambiguation, Canvas, SVG, Shadow DOM, Drag, Infinite Scroll, Table Sort, Pagination)
+- T15 Hard: Control Benchmark composite scenarios (Form query, Async list, Paginated search, Idempotent payment, Mixed UI)
 
 The site exposes a browser-side `window.__recordReplayDemo` object with the active task, seed, state, evaluator, and event log. This keeps the first version easy to inspect while the backend API layer is still being added.
 
@@ -58,6 +61,9 @@ http://<frp-host>:9876/?task=content.publish-campaign&seed=55
 http://<frp-host>:9876/?task=browser.upload-download&seed=42
 http://<frp-host>:9876/?task=browser.dialog-noise&seed=77
 http://<frp-host>:9876/?task=browser.full-stress&seed=31
+http://<frp-host>:9876/?task=control-benchmark.atomic-basic&seed=42
+http://<frp-host>:9876/?task=control-benchmark.atomic-advanced&seed=55
+http://<frp-host>:9876/?task=control-benchmark.composite-scenarios&seed=31
 ```
 
 Record & Replay evaluation flow:
@@ -92,9 +98,9 @@ Realism features currently included:
 
 Suggested assignment for three testers:
 
-- Tester A: T01, T04, T05, T10
-- Tester B: T02, T06, T07, T11
-- Tester C: T03, T08, T09, T12
+- Tester A: T01, T04, T05, T10, T13
+- Tester B: T02, T06, T07, T11, T14
+- Tester C: T03, T08, T09, T12, T15
 
 Recommended baseline seed:
 
@@ -113,6 +119,7 @@ Important operation notes:
 - Browser Lab upload tasks include a real file input. For deterministic replay, click **Download sample**, then click **Use downloaded sample / 使用已下载样例** before parsing. Agents that support file chooser replay may also use the real file input.
 - Browser Lab dialogs default to in-page dialogs so record and replay can capture them consistently. Add `&nativeDialogs=1` to T11/T12 URLs only for a separate native `alert`/`confirm` compatibility test.
 - Content publishing creates a mock published page and provides a delete button; deletion is optional for T09 pass/fail unless specifically testing cleanup.
+- Control Benchmark (T13–T15) covers 21 atomic controls and 12 composite scenarios. The Autocomplete control includes similar candidates (e.g., 北京 / 北京东 / 北京南) — select the exact target. Shadow DOM requires entering text inside an open shadowRoot. Canvas requires clicking within the blue circle's hit area. Infinite Scroll lists all items; find and click the target item (e.g., ITEM-073). Pagination target is on page 4 (TARGET-P4-03). The S11 payment modal must be confirmed exactly once; duplicate confirms are blocked. S12 Mixed UI requires completing Shadow DOM, Canvas, and SVG before clicking the check button.
 
 ## Setup
 
@@ -155,7 +162,7 @@ npm run preflight
 
 ### E2E smoke (real browser, full UI flow)
 
-Drives Chrome via Selenium to click, type, select, drag, and submit each of the 12 tasks on the README's recommended seeds, then asserts each one reaches a 100% final-state score. Requires Chrome and the `.venv` setup from the Setup section.
+Drives Chrome via Selenium to click, type, select, drag, and submit all 15 tasks on the README's recommended seeds, then asserts each one reaches a 100% final-state score. Requires Chrome and the `.venv` setup from the Setup section.
 
 ```bash
 # 1. Start the preview server in one terminal
@@ -170,6 +177,7 @@ Expected output ends with:
 ```text
 T01: 1  T02: 1  T03: 1  T04: 1  T05: 1  T06: 1
 T07: 1  T08: 1  T09: 1  T10: 1  T11: 1  T12: 1
+T13: 1  T14: 1  T15: 1
 ALL PASS
 ```
 

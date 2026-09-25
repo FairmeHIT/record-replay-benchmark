@@ -2,6 +2,7 @@ import type {
   AppId,
   BrowserLabState,
   CodeHostingState,
+  ControlBenchmarkState,
   EvaluationResult,
   MediaReviewState,
   ProfileFormState,
@@ -26,6 +27,7 @@ export const appNameText: Record<AppId, Record<Locale, string>> = {
   "code-hosting": { zh: "代码托管", en: "Code Hosting" },
   "browser-lab": { zh: "浏览器操作实验室", en: "Browser Lab" },
   "content-review": { zh: "内容运营台", en: "Content Desk" },
+  "control-benchmark": { zh: "控件验证场", en: "Control Benchmark" },
 };
 
 export const difficultyText = {
@@ -240,6 +242,15 @@ export const featureModulesText: Array<{
       en: ["Upload", "Download", "Alert", "Confirm", "Interference", "Drag sort"],
     },
   },
+  {
+    appId: "control-benchmark",
+    title: { zh: "控件验证场", en: "Control Benchmark" },
+    description: { zh: "覆盖 21 种原子控件与 12 种复合场景，含自动补全消歧、Canvas、SVG、Shadow DOM 等。", en: "21 atomic controls and 12 composite scenarios, including autocomplete disambiguation, Canvas, SVG, and Shadow DOM." },
+    features: {
+      zh: ["按钮", "文本", "选择控件", "自动补全", "Canvas/SVG", "Shadow DOM", "拖拽", "无限滚动", "表格排序", "分页"],
+      en: ["Button", "Text", "Choice", "Autocomplete", "Canvas/SVG", "Shadow DOM", "Drag", "Infinite scroll", "Table sort", "Pagination"],
+    },
+  },
 ];
 
 const classLabels = {
@@ -360,6 +371,21 @@ const taskText = {
     summary: { zh: "完成上传、提示弹窗、干扰处理、长列表选择、拖拽排序、下载和提交。", en: "Complete upload, alert dialogs, overlays, list selection, drag sorting, download, and submit." },
     tags: { zh: ["上传", "下载", "弹窗", "拖拽", "噪声"], en: ["Upload", "Download", "Dialog", "Drag", "Noise"] },
   },
+  "control-benchmark.atomic-basic": {
+    title: { zh: "原子控件基础验证", en: "Atomic Control Basics" },
+    summary: { zh: "完成按钮、文本、Radio/Checkbox/Switch、下拉、滑块、弹窗和 Tab 等基础控件交互。", en: "Complete button, text, radio/checkbox/switch, select, slider, modal, and tab interactions." },
+    tags: { zh: ["按钮", "文本", "选择", "滑块", "弹窗"], en: ["Button", "Text", "Choice", "Slider", "Modal"] },
+  },
+  "control-benchmark.atomic-advanced": {
+    title: { zh: "原子控件高级验证", en: "Atomic Control Advanced" },
+    summary: { zh: "完成自动补全消歧、日期、拖拽、Canvas/SVG/Shadow DOM、无限滚动、表格排序和分页等高级控件。", en: "Complete autocomplete disambiguation, date, drag, Canvas/SVG/Shadow DOM, infinite scroll, table sort, and pagination." },
+    tags: { zh: ["自动补全", "拖拽", "Canvas", "SVG", "Shadow DOM"], en: ["Autocomplete", "Drag", "Canvas", "SVG", "Shadow DOM"] },
+  },
+  "control-benchmark.composite-scenarios": {
+    title: { zh: "复合场景验证", en: "Composite Scenarios" },
+    summary: { zh: "完成复合表单查询、异步列表筛选、分页查找、高风险防重提交和混合 UI 场景。", en: "Complete composite form query, async list filter, paginated search, idempotent payment, and mixed UI scenarios." },
+    tags: { zh: ["复合表单", "异步列表", "分页查找", "防重提交", "混合 UI"], en: ["Form", "Async list", "Pagination", "Idempotent", "Mixed UI"] },
+  },
 } as const;
 
 export function localizedTask(task: TaskDefinition, locale: Locale) {
@@ -425,6 +451,18 @@ export function localizedInstruction(task: TaskDefinition, state: TaskState, loc
       const lab = state as BrowserLabState;
       return `Close all interference layers. Upload any file, choose document type "${valueHint(lab.target.uploadType, locale)}", and parse it. Complete the alert, approval code ${lab.target.approvalCode}, and archive confirmation. Select ${lab.target.documentId}, reorder the queue to ${lab.target.dragOrder.join(" > ")}, set report format ${lab.target.reportFormat}, download the report, include "${valueHint(lab.target.memoKeyword, locale)}" in the memo, then submit.`;
     }
+    case "control-benchmark.atomic-basic": {
+      const cb = state as ControlBenchmarkState;
+      return `Complete basic control verification: click the normal button, delayed button (wait for response), and double-click the button; type "${cb.target.textValue}" in the text input and ${cb.target.passwordValue} in the password field; select Radio ${cb.target.radioValue}, check the checkbox, set the switch to ${cb.target.switchOn ? "on" : "off"}; select "${cb.target.selectValue}" from the dropdown; set the slider to ${cb.target.sliderValue}; open the modal and confirm; switch to the "Details" tab.`;
+    }
+    case "control-benchmark.atomic-advanced": {
+      const cb = state as ControlBenchmarkState;
+      return `Complete advanced control verification: in autocomplete, select "${cb.target.autocompleteValue}" exactly (candidates include similar items, do not misclick); set the date to ${cb.target.dateValue}; drag the card to the drop zone; click the Canvas blue circle; click the SVG circle; in Shadow DOM, enter ${cb.target.shadowValue} and submit; find ${cb.target.scrollTarget} in the infinite scroll and click it; click to sort the table by score; paginate to find ${cb.target.paginationTarget}; expand the accordion.`;
+    }
+    case "control-benchmark.composite-scenarios": {
+      const cb = state as ControlBenchmarkState;
+      return `Complete composite scenarios: S01 enter customer "${cb.target.scenarioName}", type "${cb.target.scenarioType}", date ${cb.target.scenarioDate}, then search; S03 filter region "${cb.target.scenarioRegion}" then load data; S04 page through to find ORDER-X-042 and stop; S11 make a payment once (amount ${cb.target.scenarioAmount}) and ensure duplicate submission is blocked; S12 check Shadow DOM, Canvas, and SVG all complete, then verify.`;
+    }
     default:
       return task.instruction(state);
   }
@@ -484,6 +522,30 @@ const checkText: Record<string, Record<string, string>> = {
   "browser.full-stress:drag-order": { en: "Drag order is correct" },
   "browser.full-stress:download": { en: "Report was downloaded" },
   "browser.full-stress:memo-submit": { en: "Memo includes keyword and task was submitted" },
+  "control-benchmark.atomic-basic:button-normal": { en: "Normal button click succeeded" },
+  "control-benchmark.atomic-basic:button-delayed": { en: "Delayed button response succeeded" },
+  "control-benchmark.atomic-basic:button-double": { en: "Double-click button succeeded" },
+  "control-benchmark.atomic-basic:text": { en: "Text and password inputs are correct" },
+  "control-benchmark.atomic-basic:choice": { en: "Radio, checkbox, and switch are set correctly" },
+  "control-benchmark.atomic-basic:select": { en: "Dropdown selection is correct" },
+  "control-benchmark.atomic-basic:slider": { en: "Slider adjusted to target value" },
+  "control-benchmark.atomic-basic:modal": { en: "Modal confirmation completed" },
+  "control-benchmark.atomic-basic:tabs": { en: "Tab switched to target panel" },
+  "control-benchmark.atomic-advanced:autocomplete": { en: "Exact target city selected (disambiguation)" },
+  "control-benchmark.atomic-advanced:date": { en: "Date set correctly" },
+  "control-benchmark.atomic-advanced:drag": { en: "Drag and drop succeeded" },
+  "control-benchmark.atomic-advanced:canvas": { en: "Canvas circle area clicked" },
+  "control-benchmark.atomic-advanced:svg": { en: "SVG circle clicked" },
+  "control-benchmark.atomic-advanced:shadow": { en: "Shadow DOM input is correct" },
+  "control-benchmark.atomic-advanced:scroll": { en: "Target item found in infinite scroll" },
+  "control-benchmark.atomic-advanced:table-sort": { en: "Table sorted by score" },
+  "control-benchmark.atomic-advanced:pagination": { en: "Target item found via pagination" },
+  "control-benchmark.atomic-advanced:accordion": { en: "Accordion expanded" },
+  "control-benchmark.composite-scenarios:s01": { en: "Composite form query parameters match" },
+  "control-benchmark.composite-scenarios:s03": { en: "Async list filter is correct" },
+  "control-benchmark.composite-scenarios:s04": { en: "Target order found via pagination" },
+  "control-benchmark.composite-scenarios:s11": { en: "Idempotent payment and duplicate block succeeded" },
+  "control-benchmark.composite-scenarios:s12": { en: "Mixed UI scenario fully completed" },
 };
 
 export function localizedEvaluation(taskId: string, evaluation: EvaluationResult, locale: Locale): EvaluationResult {

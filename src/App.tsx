@@ -20,10 +20,12 @@ import {
   Train,
   Users,
   XCircle,
+  Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BrowserLabView } from "./apps/BrowserLab";
 import { CodeHostingView } from "./apps/CodeHosting";
+import { ControlBenchmarkView } from "./apps/ControlBenchmark";
 import { ContentReviewView } from "./apps/ContentReview";
 import { ProfileFormView, TableApprovalView } from "./apps/ControlLab";
 import { StorefrontView } from "./apps/Storefront";
@@ -74,6 +76,7 @@ const appIcons: Record<AppId, typeof ClipboardCheck> = {
   "code-hosting": Code2,
   "browser-lab": MousePointerClick,
   "content-review": Image,
+  "control-benchmark": Zap,
 };
 
 type Theme = "light" | "dark";
@@ -352,6 +355,8 @@ function App() {
         return <BrowserLabView locale={locale} state={taskState} onChange={updateTaskState} />;
       case "media-review":
         return <ContentReviewView locale={locale} state={taskState} onChange={updateTaskState} />;
+      case "control-benchmark":
+        return <ControlBenchmarkView locale={locale} state={taskState} onChange={updateTaskState} />;
       default:
         return null;
     }

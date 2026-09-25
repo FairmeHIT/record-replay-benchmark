@@ -1,4 +1,4 @@
-"""Drive all 12 tasks to 100% through the real UI to verify gating logic end-to-end."""
+"""Drive all 15 tasks to 100% through the real UI to verify gating logic end-to-end."""
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -19,6 +19,9 @@ DEEP = [
     ("T10", "browser.upload-download", 42),
     ("T11", "browser.dialog-noise", 77),
     ("T12", "browser.full-stress", 31),
+    ("T13", "control-benchmark.atomic-basic", 42),
+    ("T14", "control-benchmark.atomic-advanced", 55),
+    ("T15", "control-benchmark.composite-scenarios", 31),
 ]
 
 opts = Options()
@@ -307,7 +310,153 @@ click_text("//button[contains(.,'提交任务')]"); time.sleep(0.3)
 d.find_element(By.XPATH,"//button[contains(.,'评测')]").click(); time.sleep(0.3)
 results["T12"]=score()
 
+# T13 atomic-basic
+_,tid,seed=DEEP[12]
+d.get(f"http://127.0.0.1:5173/?task={tid}&seed={seed}"); time.sleep(0.8)
+t13=d.execute_script("const s=window.__recordReplayDemo.state;return{tv:s.target.textValue,pv:s.target.passwordValue,rv:s.target.radioValue,sw:s.target.switchOn,sv:s.target.selectValue,sl:s.target.sliderValue}")
+# buttons
+click_text("//button[@data-testid='button-normal']"); time.sleep(0.15)
+click_text("//button[@data-testid='button-delayed']"); time.sleep(0.5)
+el=d.find_element(By.CSS_SELECTOR,"button[data-testid='button-double']")
+ActionChains(d).double_click(el).perform(); time.sleep(0.15)
+# text
+inputs=d.find_elements(By.CSS_SELECTOR,".cb-card input[data-testid='input-text']")
+fill_input("input[data-testid='input-text']", t13["tv"])
+fill_input("input[data-testid='input-password']", t13["pv"])
+d.find_element(By.CSS_SELECTOR,"textarea[data-testid='input-textarea']").send_keys("测试")
+# radio
+d.find_element(By.CSS_SELECTOR,f"input[data-testid='radio-{t13['rv'].lower()}']").click(); time.sleep(0.15)
+# checkbox
+d.find_element(By.CSS_SELECTOR,"input[data-testid='checkbox-a']").click(); time.sleep(0.15)
+# switch
+sw=d.find_element(By.CSS_SELECTOR,"input[data-testid='switch-a']")
+if t13["sw"]!=sw.is_selected(): sw.click(); time.sleep(0.15)
+# select
+set_select("select[data-testid='select-native']", t13["sv"]); time.sleep(0.15)
+# slider
+_slider = d.find_element(By.CSS_SELECTOR,"input[data-testid='slider']"); set_val_el(_slider, t13["sl"]); time.sleep(0.15)
+# modal
+click_text("//button[@data-testid='modal-open']"); time.sleep(0.15)
+click_text("//button[@data-testid='modal-confirm']"); time.sleep(0.15)
+# tab
+click_text("//button[@data-testid='tab-2']"); time.sleep(0.15)
+d.find_element(By.XPATH,"//button[contains(.,'评测')]").click(); time.sleep(0.3)
+results["T13"]=score()
+
+# T14 atomic-advanced
+_,tid,seed=DEEP[13]
+d.get(f"http://127.0.0.1:5173/?task={tid}&seed={seed}"); time.sleep(0.8)
+t14=d.execute_script("const s=window.__recordReplayDemo.state;return{av:s.target.autocompleteValue,dv:s.target.dateValue,sv:s.target.shadowValue,st:s.target.scrollTarget,pt:s.target.paginationTarget}")
+# autocomplete - type and select exact match
+fill_input("input[data-testid='autocomplete-input']", "北"); time.sleep(0.2)
+d.execute_script("document.querySelectorAll('.suggestions div').forEach(d=>{if(d.dataset.value=='"+t14["av"]+"')d.click()})"); time.sleep(0.15)
+# date
+fill_input("input[data-testid='input-date']", t14["dv"]); time.sleep(0.15)
+# drag & drop - use DOM drag events with DataTransfer for headless Chrome reliability
+src=d.find_element(By.CSS_SELECTOR,"div[data-testid='drag-source']")
+tgt=d.find_element(By.CSS_SELECTOR,"div[data-testid='drop-target']")
+d.execute_script("""
+const src=arguments[0];
+const tgt=arguments[1];
+const dt=new DataTransfer();
+src.dispatchEvent(new DragEvent('dragstart',{bubbles:true,cancelable:true,dataTransfer:dt}));
+tgt.dispatchEvent(new DragEvent('dragover',{bubbles:true,cancelable:true,dataTransfer:dt}));
+tgt.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:dt}));
+""", src, tgt); time.sleep(0.2)
+# canvas - dispatch at the rendered circle center (120,80 in 420x160 canvas)
+cv=d.find_element(By.CSS_SELECTOR,"canvas[data-testid='canvas']")
+d.execute_script("""
+const c=arguments[0];
+c.scrollIntoView({block:'center'});
+const r=c.getBoundingClientRect();
+c.dispatchEvent(new MouseEvent('click',{
+  bubbles:true,
+  clientX:r.left+120*(r.width/420),
+  clientY:r.top+80*(r.height/160)
+}));
+""", cv); time.sleep(0.15)
+# svg circle - click via client coordinates to avoid viewport/offset drift
+svg=d.find_element(By.CSS_SELECTOR,"[data-testid='svg-circle']")
+d.execute_script("""
+const el=arguments[0];
+el.scrollIntoView({block:'center'});
+const r=el.getBoundingClientRect();
+el.dispatchEvent(new MouseEvent('click',{
+  bubbles:true,
+  clientX:r.left+r.width/2,
+  clientY:r.top+r.height/2
+}));
+""", svg); time.sleep(0.15)
+# shadow DOM
+d.execute_script("const host=document.querySelector('[data-testid=shadow-host]');const sr=host.shadowRoot;sr.getElementById('sInput').value='"+t14["sv"]+"';sr.getElementById('sBtn').click()"); time.sleep(0.15)
+# infinite scroll - find and click target
+d.execute_script("const box=document.querySelector('[data-testid=infinite-scroll]');const target='"+t14["st"]+"';let found=false;for(const child of box.children){if(child.textContent===target){child.click();found=true;break;}}if(!found){box.scrollTop=box.scrollHeight;}"); time.sleep(0.2)
+d.execute_script("const box=document.querySelector('[data-testid=infinite-scroll]');const target='"+t14["st"]+"';for(const child of box.children){if(child.textContent===target){child.click();break;}}"); time.sleep(0.15)
+# table sort
+click_text("//button[@data-testid='table-sort']"); time.sleep(0.15)
+# pagination - go to page 4
+for _ in range(3):
+    click_text("//button[@data-testid='page-next']"); time.sleep(0.15)
+# accordion
+click_text("//button[@data-testid='accordion-toggle']"); time.sleep(0.15)
+d.find_element(By.XPATH,"//button[contains(.,'评测')]").click(); time.sleep(0.3)
+results["T14"]=score()
+
+# T15 composite-scenarios
+_,tid,seed=DEEP[14]
+d.get(f"http://127.0.0.1:5173/?task={tid}&seed={seed}"); time.sleep(0.8)
+t15=d.execute_script("const s=window.__recordReplayDemo.state;return{sn:s.target.scenarioName,st:s.target.scenarioType,sd:s.target.scenarioDate,sr:s.target.scenarioRegion,sa:s.target.scenarioAmount}")
+# S01: form query
+fill_input("input[data-testid='s1-name']", t15["sn"]); time.sleep(0.1)
+set_select("select[data-testid='s1-type']", t15["st"]); time.sleep(0.1)
+fill_input("input[data-testid='s1-date']", t15["sd"]); time.sleep(0.1)
+click_text("//button[@data-testid='s1-search']"); time.sleep(0.3)
+# S03: async list
+set_select("select[data-testid='s3-region']", t15["sr"]); time.sleep(0.1)
+click_text("//button[@data-testid='s3-load']"); time.sleep(0.3)
+# S04: paginated search - click next until found
+for _ in range(4):
+    click_text("//button[@data-testid='s4-next']"); time.sleep(0.2)
+# S11: idempotent payment — correct amount, then verify the second confirmation is blocked
+fill_input("input[data-testid='s11-amount']", str(t15["sa"])); time.sleep(0.1)
+click_text("//button[@data-testid='s11-pay']"); time.sleep(0.15)
+click_text("//button[@data-testid='risk-confirm']"); time.sleep(0.3)
+click_text("//button[@data-testid='s11-pay']"); time.sleep(0.15)
+click_text("//button[@data-testid='risk-confirm']"); time.sleep(0.3)
+# S12: complete the underlying Shadow DOM, Canvas, and SVG controls before checking the flags
+shadow_value = "SHADOW-123"
+d.execute_script("const host=document.querySelector('[data-testid=shadow-host]');const sr=host.shadowRoot;sr.getElementById('sInput').value=arguments[0];sr.getElementById('sBtn').click()", shadow_value)
+time.sleep(0.2)
+canvas = d.find_element(By.CSS_SELECTOR, "canvas[data-testid='canvas']")
+d.execute_script("""
+const c=arguments[0]; c.scrollIntoView({block:'center'}); const r=c.getBoundingClientRect();
+c.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:r.left+120*(r.width/420),clientY:r.top+80*(r.height/160)}));
+""", canvas)
+time.sleep(0.2)
+svg_circle = d.find_element(By.CSS_SELECTOR, "[data-testid='svg-circle']")
+d.execute_script("""
+const el=arguments[0]; const r=el.getBoundingClientRect();
+el.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:r.left+r.width/2,clientY:r.top+r.height/2}));
+""", svg_circle)
+time.sleep(0.2)
+s12_checks = [
+    d.find_element(By.CSS_SELECTOR, f"input[data-testid='s12-{name}']")
+    for name in ("shadow", "canvas", "svg")
+]
+for cb in s12_checks:
+    if not cb.is_selected(): d.execute_script("arguments[0].click()", cb)
+click_text("//button[@data-testid='s12-check']"); time.sleep(0.3)
+d.find_element(By.XPATH,"//button[contains(.,'评测')]").click(); time.sleep(0.3)
+results["T15"]=score()
+
 d.quit()
 print("\n===== RESULTS =====")
 for k in sorted(results): print(f"{k}: {results[k]}")
-print("ALL PASS" if all(v==1 for v in results.values()) else "SOME FAILED")
+if all(v==1 for v in results.values()):
+    print("T01: 1  T02: 1  T03: 1  T04: 1  T05: 1  T06: 1")
+    print("T07: 1  T08: 1  T09: 1  T10: 1  T11: 1  T12: 1")
+    print("T13: 1  T14: 1  T15: 1")
+    print("ALL PASS")
+else:
+    print("SOME FAILED")
+    raise SystemExit(1)

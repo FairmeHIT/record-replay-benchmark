@@ -4,7 +4,8 @@ export type AppId =
   | "storefront"
   | "code-hosting"
   | "browser-lab"
-  | "content-review";
+  | "content-review"
+  | "control-benchmark";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
@@ -257,6 +258,88 @@ export interface MediaReviewState {
   };
 }
 
+export interface ControlBenchmarkState {
+  kind: "control-benchmark";
+  target: {
+    textValue: string;
+    passwordValue: string;
+    radioValue: string;
+    switchOn: boolean;
+    selectValue: string;
+    autocompleteValue: string;
+    dateValue: string;
+    sliderValue: number;
+    shadowValue: string;
+    scrollTarget: string;
+    paginationTarget: string;
+    scenarioName: string;
+    scenarioType: string;
+    scenarioDate: string;
+    scenarioRegion: string;
+    scenarioAmount: number;
+    scenarioInput: string;
+    candidateFlip: boolean;
+  };
+  form: {
+    buttonNormalOk: boolean;
+    buttonDelayedOk: boolean;
+    buttonDoubleOk: boolean;
+    textValue: string;
+    passwordValue: string;
+    textareaValue: string;
+    textChanged: boolean;
+    radioValue: string;
+    checkboxChecked: boolean;
+    switchOn: boolean;
+    choiceDone: boolean;
+    selectValue: string;
+    autocompleteValue: string;
+    autocompleteDone: boolean;
+    dateValue: string;
+    timeValue: string;
+    dateDone: boolean;
+    tabActive: string;
+    accordionOpen: boolean;
+    modalOpen: boolean;
+    modalConfirmed: boolean;
+    toastShown: boolean;
+    treeOpen: boolean;
+    sliderValue: number;
+    sliderDone: boolean;
+    dragCompleted: boolean;
+    canvasClicked: boolean;
+    svgClicked: boolean;
+    shadowValue: string;
+    shadowResult: string;
+    scrollTargetFound: boolean;
+    tableSorted: boolean;
+    paginationPage: number;
+    paginationTargetFound: boolean;
+    hoverAction: string;
+    contextAction: string;
+    keyValue: string;
+    s1Name: string;
+    s1Type: string;
+    s1Date: string;
+    s1Result: string;
+    s3Region: string;
+    s3Loaded: boolean;
+    s3Result: string;
+    s4Page: number;
+    s4Result: string;
+    s11Amount: number;
+    s11ModalOpen: boolean;
+    s11Paid: boolean;
+    s11DuplicateBlocked: boolean;
+    s11TransactionId: string;
+    s11Result: string;
+    s12Shadow: boolean;
+    s12Canvas: boolean;
+    s12Svg: boolean;
+    s12Result: string;
+  };
+}
+
 export type TaskState =
   | ProfileFormState
   | TableApprovalState
@@ -264,7 +347,8 @@ export type TaskState =
   | StorefrontState
   | CodeHostingState
   | BrowserLabState
-  | MediaReviewState;
+  | MediaReviewState
+  | ControlBenchmarkState;
 
 export interface TaskDefinition {
   id: string;
